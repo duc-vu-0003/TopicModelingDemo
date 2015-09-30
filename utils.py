@@ -13,7 +13,7 @@ class Tokenizer:
     self.stemmer = PorterStemmer()
     stopwordsReuter = [line.strip() for line in open(Paths.stopword, 'r')]
 
-    self.stopwords = (
+    self.stopwords = (stopwordsReuter +
       list(string.punctuation) +
       ['lt', 'gt', 'vs'])
 
@@ -31,9 +31,9 @@ class Tokenizer:
   #    energy/usa
   def tokenize(self, doc):
     tokens = wordpunct_tokenize(doc.strip())
-    return [unicode(self.stemmer.stem(t.lower())) for t in tokens
-            if not t.lower() in self.stopwords and not self.numbers.match(t)]
-
+    return [word.lower() for word in tokens if word.lower() not in self.stopwords and not self.numbers.match(word)]
+    # return [unicode(self.stemmer.stem(t.lower())) for t in tokens
+    #         if not t.lower() in self.stopwords and not self.numbers.match(t)]
 
 class SingleFileCorpus(object):
 
