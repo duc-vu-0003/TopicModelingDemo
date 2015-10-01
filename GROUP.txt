@@ -1,0 +1,9 @@
+============
+GROUP 6
+============
+
+1.Vũ Anh Đức
+    - Research about NLTK and Gensim
+
+2.Vũ Anh Trường
+    - Research about NLTK and Gensim
