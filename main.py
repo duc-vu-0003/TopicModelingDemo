@@ -34,10 +34,11 @@ def preProcess():
                     docs += 1
                     if docs % 1000 == 0:
                       print "Normalised %d documents" % (docs)
-                    if f.startswith("train"):
-                        out.write(' '.join(tokens) + "\n")
-                    else:
-                        test.write(' '.join(tokens) + "\n")
+                      out.write(' '.join(tokens) + "\n")
+                    # if f.startswith("train"):
+                    #
+                    # else:
+                    #     test.write(' '.join(tokens) + "\n")
                     fileid_out.write(f + "\n")
 
                   except UnicodeDecodeError:
@@ -46,7 +47,7 @@ def preProcess():
     print "Normalised %d documents" % (docs)
     print "Skipped %d bad documents" % (bad)
     print 'Finished building train file ' + Paths.texts_clean
-    print 'Finished building test file ' + Paths.reuter_test
+    # print 'Finished building test file ' + Paths.reuter_test
 
 def buildCorpus():
     # Build corpus script - build gensim dictionary and corpus
@@ -82,12 +83,12 @@ def trainLDA(n_topics):
     lda.save(Paths.lda_model)
     print 'Finished train LDA Model %s ' + Paths.lda_model
 
-def displayLDA(n_topics):
+def displayLDA(n_topics, num_words):
     print "Loading LDA Model"
     lda = models.LdaModel.load(Paths.lda_model)
     i = 0
-
-    for topic in lda.show_topics(num_topics=n_topics):
+    # show_topics(num_topics=10, num_words=10, log=False, formatted=True)
+    for topic in lda.show_topics(num_topics=n_topics, num_words=num_words, log=False, formatted=True):
         print '#' + str(i) + ': ' + topic
         i += 1
 
@@ -166,7 +167,7 @@ def main():
         elif oper == 3:
             trainLDA(100)
         elif oper == 4:
-            displayLDA(50)
+            displayLDA(10, 100)
         elif oper == 5:
             test_data = loadTestTopic(2)
             for new_topic in test_data:
