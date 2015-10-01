@@ -22,6 +22,7 @@ class Tokenizer:
     #   ['lt', 'gt', 'vs'])
     # self.stopwords = stopwordsReuter
     self.numbers = re.compile('^\d+(st|nd|rd|th|p|pct)?$', re.IGNORECASE)
+    self.len_file = 3
 
   #Tokenize
   #Unicode
@@ -31,7 +32,7 @@ class Tokenizer:
   #    energy/usa
   def tokenize(self, doc):
     tokens = wordpunct_tokenize(doc.strip())
-    return [word.lower() for word in tokens if word.lower() not in self.stopwords and not self.numbers.match(word)]
+    return [word.lower() for word in tokens if word.lower() not in self.stopwords and not self.numbers.match(word) and len(word) >= self.len_file]
     # return [unicode(self.stemmer.stem(t.lower())) for t in tokens
     #         if not t.lower() in self.stopwords and not self.numbers.match(t)]
 

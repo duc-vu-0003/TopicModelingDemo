@@ -63,8 +63,7 @@ def buildCorpus():
 
     print "Remove very rare and very common words"
     # Remove very rare and very common words
-    dictionary.filter_extremes()
-    dictionary.compactify()
+    dictionary.filter_extremes(no_below=1, no_above=0.8)
     dictionary.save(Paths.dictionary)
 
     print "Second pass over files to serialize corpus to file"
@@ -88,9 +87,18 @@ def displayLDA(n_topics, num_words):
     lda = models.LdaModel.load(Paths.lda_model)
     i = 0
     # show_topics(num_topics=10, num_words=10, log=False, formatted=True)
-    for topic in lda.show_topics(num_topics=n_topics, num_words=num_words, log=False, formatted=True):
-        print '#' + str(i) + ': ' + topic
+    # for topic in lda.show_topics(num_topics=n_topics, num_words=num_words, log=False, formatted=True):
+    #     print '#' + str(i) + ': ' + topic
+    #     i += 1
+
+    topics_matrix = lda.show_topics(formatted=False, num_words=num_words)
+    topics_matrix = np.array(topics_matrix)
+
+    topic_words = topics_matrix[:,:,1]
+    for topic in topic_words:
         i += 1
+        print 'Topic: ', i
+        print([str(word) for word in topic])
 
 def load_stopwords():
     print "Loading Stop Words List"
