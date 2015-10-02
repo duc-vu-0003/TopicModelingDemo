@@ -1,5 +1,7 @@
 Learning basic natural language processing and topic modelling techniques with NLTK and Gensim.
 
+Link: https://github.com/sirty/TopicModelingDemo
+
  - Document tokenising and normalising
  - Removing stopwords and words that are very rare and very common in a corpus
  - Bag-of-words vectors
