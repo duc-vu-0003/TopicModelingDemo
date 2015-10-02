@@ -34,20 +34,20 @@ def preProcess():
               for f in reuters.fileids():
                   contents = reuters.open(f).read()
                   try:
-                    tokens = tokenizer.tokenize(contents)
-                    docs += 1
-                    if docs % 1000 == 0:
-                      print "Normalised %d documents" % (docs)
+                      tokens = tokenizer.tokenize(contents)
+                      docs += 1
+                      if docs % 1000 == 0:
+                          print "Normalised %d documents" % (docs)
+
                       out.write(' '.join(tokens) + "\n")
-                    # if f.startswith("train"):
-                    #
-                    # else:
-                    #     test.write(' '.join(tokens) + "\n")
-                    fileid_out.write(f + "\n")
+                      # if f.startswith("train"):
+                      #
+                      # else:
+                      #     test.write(' '.join(tokens) + "\n")
+                      fileid_out.write(f + "\n")
 
                   except UnicodeDecodeError:
-                    bad += 1
-
+                      bad += 1
     print "Normalised %d documents" % (docs)
     print "Skipped %d bad documents" % (bad)
     print 'Finished building train file ' + Paths.texts_clean
@@ -134,7 +134,7 @@ def showWordCloud():
             freqs.append((row["term"], row["prob"]))
         wc = wordcloud.WordCloud()
         elements = wc.fit_words(freqs)
-        plt.figure(figsize=(5, 5))
+        plt.figure(figsize=(5, 5), dpi=100)
         plt.imshow(wc)
         plt.axis("off")
         plt.show()
