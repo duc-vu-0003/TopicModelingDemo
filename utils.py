@@ -60,3 +60,4 @@ class Paths(object):
   stopword = path.join(reuters, 'stopwords')
   lda_model = path.join(base, 'lda.model')
   reuter_test = path.join(base, 'reuters_test.txt')
+  final_topics = path.join(base, 'final_topics.csv')

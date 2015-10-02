@@ -10,11 +10,17 @@ import logging
 from nltk.stem.wordnet import WordNetLemmatizer
 import random
 import nltk
+import time
+import matplotlib.pyplot as plt
+import wordcloud
+import pandas as pd
 
 # Preprocess script - build a single text file with cleaned, normalised documents
 #  - tokenised, stemmed, one document per line.
 # Track fileids to retrieve document text later
 def preProcess():
+    print 'PreProcess Reuters Corpus'
+    start_time = time.time()
     docs = 0
     bad = 0
     tokenizer = Tokenizer()
@@ -29,8 +35,6 @@ def preProcess():
                   contents = reuters.open(f).read()
                   try:
                     tokens = tokenizer.tokenize(contents)
-                    # tokens = contents
-
                     docs += 1
                     if docs % 1000 == 0:
                       print "Normalised %d documents" % (docs)
@@ -47,9 +51,12 @@ def preProcess():
     print "Normalised %d documents" % (docs)
     print "Skipped %d bad documents" % (bad)
     print 'Finished building train file ' + Paths.texts_clean
+    end_time = time.time()
+    print '(Time to preprocess Reuters Corpus: %s)' % (end_time - start_time)
     # print 'Finished building test file ' + Paths.reuter_test
 
 def buildCorpus():
+    start_time = time.time()
     # Build corpus script - build gensim dictionary and corpus
     dictionary = corpora.Dictionary()
 
@@ -70,8 +77,11 @@ def buildCorpus():
     #Second pass over files to serialize corpus to file
     corpus = SingleFileCorpus(Paths.texts_clean, dictionary)
     corpora.MmCorpus.serialize(Paths.corpus, corpus)
+    end_time = time.time()
+    print '(Time to build dictionary and corpus: %s)' % (end_time - start_time)
 
 def trainLDA(n_topics):
+    start_time = time.time()
     print "Loading corpus and dictionary"
     corpus = corpora.MmCorpus(Paths.corpus)
     dictionary = corpora.Dictionary.load(Paths.dictionary)
@@ -81,15 +91,20 @@ def trainLDA(n_topics):
     print "Saving LDA Model"
     lda.save(Paths.lda_model)
     print 'Finished train LDA Model %s ' + Paths.lda_model
+    end_time = time.time()
+    print '(Time to train LDA model: %s)' % (end_time - start_time)
 
 def displayLDA(n_topics, num_words):
     print "Loading LDA Model"
     lda = models.LdaModel.load(Paths.lda_model)
     i = 0
-    # show_topics(num_topics=10, num_words=10, log=False, formatted=True)
+
+    # ftt = open((Paths.final_topics), 'wb')
     # for topic in lda.show_topics(num_topics=n_topics, num_words=num_words, log=False, formatted=True):
-    #     print '#' + str(i) + ': ' + topic
+    #     # print '#' + str(i) + ': ' + topic
     #     i += 1
+    # ftt.close()
+
 
     topics_matrix = lda.show_topics(formatted=False, num_words=num_words)
     topics_matrix = np.array(topics_matrix)
@@ -97,8 +112,32 @@ def displayLDA(n_topics, num_words):
     topic_words = topics_matrix[:,:,1]
     for topic in topic_words:
         i += 1
-        print 'Topic: ', i
+        print 'Topic: %d' % i
         print([str(word) for word in topic])
+
+    i = 0
+    ftt = open((Paths.final_topics), 'wb')
+    for topic_prob in topics_matrix:
+        i += 1
+        for prob, word in topic_prob:
+            ftt.write("%d\t%s\t%s\n" % (i, word, prob))
+    ftt.close()
+
+def showWordCloud():
+    ttdf = pd.read_csv((Paths.final_topics),sep="\t", skiprows=0, names=["topic_id", "term", "prob"])
+    topics = ttdf.groupby("topic_id").groups
+    for topic in topics.keys():
+        row_ids = topics[topic]
+        freqs = []
+        for row_id in row_ids:
+            row = ttdf.ix[row_id]
+            freqs.append((row["term"], row["prob"]))
+        wc = wordcloud.WordCloud()
+        elements = wc.fit_words(freqs)
+        plt.figure(figsize=(5, 5))
+        plt.imshow(wc)
+        plt.axis("off")
+        plt.show()
 
 def load_stopwords():
     print "Loading Stop Words List"
@@ -138,7 +177,6 @@ def predict(new_topic):
     # transform into LDA space
     print "Preprocessing new data"
     tokens = extract_lemmatized_nouns(new_topic)
-    # tokens = new_topic.strip().split()
     new_topic_bow = dictionary.doc2bow(tokens)
     new_topic_lda = lda[new_topic_bow]
 
@@ -161,7 +199,7 @@ def main():
         print('2 - Build Corpus')
         print('3 - Train LDA')
         print('4 - Display LDA Topic')
-        print('5 - Predict Topics')
+        print('5 - Show as Word Cloud')
         print('0 - Exit')
         print('**************************************')
         oper = int(input("Enter your options: "))
@@ -177,12 +215,13 @@ def main():
         elif oper == 4:
             displayLDA(10, 100)
         elif oper == 5:
-            test_data = loadTestTopic(2)
-            for new_topic in test_data:
-                print new_topic
-                print "-----------------"
-                predict(new_topic)
-                print "\n"
+            # test_data = loadTestTopic(2)
+            # for new_topic in test_data:
+            #     print new_topic
+            #     print "-----------------"
+            #     predict(new_topic)
+            #     print "\n"
+            showWordCloud()
 
 if __name__ == "__main__":
     main()
