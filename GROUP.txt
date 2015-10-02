@@ -3,7 +3,13 @@ GROUP 6
 ============
 
 1.Vũ Anh Đức
-    - Research about NLTK and Gensim
+    - Research about NLTK and Gensim.
+    - Implement demo application for this assignment.
+    - Improve code.
+    - Do README.txt document
 
 2.Vũ Anh Trường
-    - Research about NLTK and Gensim
+    - Research about NLTK and Gensim.
+    - Implement show topics as WordCloud function
+    - Improve code.
+    - Do other documents
